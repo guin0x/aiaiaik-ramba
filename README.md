@@ -30,7 +30,7 @@ Disclaimer: This is assuming we continue using optical imagery. If we want to tr
 
 ### 3. **Adopt Transfer Learning Strategies**
 Transfer learning involves leveraging models pre-trained on large datasets to accelerate training and improve performance on smaller, domain-specific datasets. 
-Below are a couple of different powerful models/approach we could try.
+Below are a couple of different powerful models/approaches we could try.
 
    - **Fine-Tune [Prithvi](https://huggingface.co/ibm-nasa-geospatial/Prithvi-100M)**:
      - Leverage Prithvi’s pre-trained encoder for geospatial feature extraction.
@@ -51,19 +51,14 @@ We could try:
      - Address outlier sensitivity in predictions, especially in areas with significant erosion or deposition changes. The Huber Loss acts like L2-loss for small errors but switches to L1-loss for larger errors (beyond some threshold), reducing impact of outliers.
    - **Multi-Task Loss**:
      - Simultaneously optimize for multiple objectives (e.g., water extent, erosion, deposition) to improve prediction accuracy, for example:
+       `Total Loss = α₁ × Loss₍water₎ + α₂ × Loss₍erosion₎ + ...`
        
-   $$
-     \text{Total Loss} = \alpha_1 \cdot \text{Loss_{water}} + \alpha_2 \cdot \text{Loss_{erosion}} + ...
-   $$
-
 ---
 
 ### 5. **Integrate Physics-Informed Neural Networks (PINNs)**
    - Define governing equations (e.g., sediment continuity, shallow water equations, etc).
    - Augment the loss function with physical residuals to enforce consistency with known river dynamics; for example:
-     \[
-     \text{Total Loss} = \text{Prediction Loss} + \lambda \cdot \text{Physics Residual Loss}
-     ]\
+     `Total Loss = Prediction Loss + λ × Physics Residual Loss`
 
 ---
 
