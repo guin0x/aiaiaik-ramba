@@ -5,17 +5,17 @@ Disclaimer: This is assuming we continue using optical imagery. If we want to tr
 ## Goals
 1. Enhance JamUNet's architecture and performance.
 
-*MoSCoW (Must, Should, Could, Wont's)*
+*MoSCoW (Must have, Should have, Could have, Won't have)*
 
-**Must: Reproduce and Validate JamUNet**
+**Must:** Reproduce and Validate JamUNet
 
-**Should: Fix temporal error (with how the images are fed trhough at the moment)**
+**Should:** Fix temporal error (with how the images are fed trhough at the moment)
 
-**Should: add NDVI information (for vegetation as an indication for erosion of river channel)**
+**Should:** add NDVI information (for vegetation as an indication for erosion of river channel)
 
-**Should: Explore more indexes (e.g LAI)**
+**Should:** Explore more indexes (e.g LAI)
 
-**Could: get yearly elevation data (DEM)**
+**Could:** get yearly elevation data (DEM)
 
 ---
 
