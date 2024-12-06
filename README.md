@@ -4,9 +4,18 @@ Disclaimer: This is assuming we continue using optical imagery. If we want to tr
 
 ## Goals
 1. Enhance JamUNet's architecture and performance.
-2. Explore transfer learning with foundation models for geospatial data.
-3. Incorporate advanced temporal modeling techniques.
-4. Improve prediction accuracy and robustness with innovative loss functions and physics-informed approaches.
+
+*MoSCoW (Must, Should, Could, Wont's)*
+
+### Must: Reproduce and Validate JamUNet
+
+### Should: Fix temporal error (with how the images are fed trhough at the moment)
+
+### Should: add NDVI information (for vegetation as an indication for erosion of river channel)
+
+### Should: Explore more indexes (e.g LAI)
+
+### Could: get yearly elevation data (DEM)
 
 ---
 
