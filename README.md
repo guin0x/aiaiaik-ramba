@@ -19,6 +19,9 @@ Disclaimer: This is assuming we continue using optical imagery. If we want to tr
 
 ---
 
+## Data
+NDVI (1988-2016, resolution 0.001 arcsec): https://filesender.surf.nl/?s=download&token=539dd5e2-690e-4705-9aba-18aad9d92bfc
+
 ## Key Steps
 
 ### 1. **Reproduce and Validate JamUNet**
