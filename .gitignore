@@ -6,8 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
-# data folder
-data/
+# pkl data
+*pkl
 
 # Distribution / packaging
 .Python
