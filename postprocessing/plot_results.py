@@ -307,8 +307,11 @@ def show_evolution_nolegend(sample_img, dataset, model, nonwater=0, water=1, wat
             if j == 3 and i == 1:
                 continue  # skip ticks and labels for the last subplot (erosion and deposition areas) 
 
-            ax[i,j].set_xticks(x_ticks, fontsize=12)
-            ax[i,j].set_yticks(y_ticks, fontsize=12)
+            ax[i,j].set_xticks(x_ticks)  # Set the tick positions
+            ax[i,j].set_xticklabels(x_ticks, fontsize=12)  # Set the tick labels with font size
+            ax[i,j].set_yticks(y_ticks)  # Set the y-ticks (no fontsize here)
+            ax[i,j].set_yticklabels(y_ticks, fontsize=12)  # Set the y-tick labels with font size
+
 
             if i == 1 and j < (ax.shape[1]-1):
                 ax[i,j].set_xlabel('Width (km)', fontsize=14)
@@ -433,9 +436,10 @@ def erosion_sites(model, dataset, sample, nonwater=0, water=1, water_threshold=0
         ax.tick_params(labelleft=False)
     
     for ax in axes:
-        ax.set_xticks(x_ticks, fontsize=12)
+        ax.set_xticks(x_ticks)
         ax.set_xticklabels(x_tick_labels, fontsize=12)
-        ax.set_yticks(y_ticks, fontsize=12)
+        ax.set_yticks(y_ticks)
+        ax.set_yticklabels(y_tick_labels, fontsize=12)
         ax.set_xlabel('Width (km)', fontsize=14)
     
     fig.text(0.3, 0.74, 'Erosion', ha='center', va='center', fontsize=16)
@@ -505,7 +509,7 @@ def plot_erosion_deposition(sample_img, dataset, model, nonwater=0, water=1, pix
 
     ax.set_ylabel('Area (km²)', fontsize=13)
     ax.set_title('Real and predicted erosion and deposition areas', fontsize=13)
-    ax.set_xticks(bar_positions, fontsize=12)
+    ax.set_xticks(bar_positions)
     ax.set_xticklabels(categories, fontsize=12)
     
     if ax is None:
