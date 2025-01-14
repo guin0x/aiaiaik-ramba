@@ -1,4 +1,7 @@
 import torch
+from sklearn.metrics import (roc_curve, auc, precision_recall_curve, 
+                            average_precision_score, balanced_accuracy_score)
+import matplotlib.pyplot as plt
 
 def compute_metrics(pred, target, nonwater_value=0, water_value=1, water_threshold=0.5):
     '''
@@ -35,3 +38,52 @@ def compute_metrics(pred, target, nonwater_value=0, water_value=1, water_thresho
     csi = tp / (tp + fp + fn) if (tp + fp + fn) > 0 else 0
 
     return accuracy, precision, recall, f1_score, csi 
+
+def single_roc_curve(model, dataset, sample, train_val_test='testing', device='cuda:0', get_avg=False):
+    '''
+    Plot or return the FPR, TPR and ROC AUC of a single sample.
+
+    Inputs:
+           model = class, deep-learning model to be validated/tested
+           dataset = TensorDataset, contains inputs and targets for the model
+           sample = int, specifies the input-target combination
+           train_val_test = str, specifies what the images are used for.
+                            available options: 'training', 'validation' and 'testing'
+           device = str, specifies device where memory is allocated for performing the computations
+                    default: 'cuda' (GPU), other availble option: 'cpu'
+           get_avg = bool, sets whether the function plots ROC curve or only returns fpr, tpr and roc_auc 
+                     default: False, plots the curve
+    Output:
+           None or fpr, tpr, roc_auc, depending on get_avg key
+    '''
+    # need internal import statement to avoid circular imports
+    from model.train_eval import get_predictions
+
+    single_input = dataset[sample][0]
+    single_target = dataset[sample][1].cpu()
+    
+    target_flat = single_target.flatten()
+
+    prediction = get_predictions(model, single_input.unsqueeze(0), device)
+    prediction_flat = prediction.detach().cpu().flatten() # unsqueeze needed to match dimensions
+    
+    # compute ROC curve and ROC area
+    fpr, tpr, _ = roc_curve(target_flat, prediction_flat)
+    roc_auc = auc(fpr, tpr)
+
+    if not get_avg:
+        plt.figure()
+        plt.plot(fpr, tpr, color='navy', lw=2.5, label=f'ROC curve (AUC = {roc_auc:.3f})')
+        plt.fill_between(fpr, tpr,  color='palegoldenrod')
+        plt.plot([0, 1], [0, 1], color='red', lw=2.5, linestyle='--', label=f'Random classifier = 0.5')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.0])
+        plt.xlabel('False Positive Rate [-]', fontsize=14)
+        plt.ylabel('True Positive Rate [-]', fontsize=14)
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(f'Receiver Operating Characteristic curve\n for {train_val_test} sample {sample}', fontsize=16)
+        plt.legend(loc="lower right", fontsize=12)
+        plt.show()
+
+    return fpr, tpr, roc_auc if get_avg else None
