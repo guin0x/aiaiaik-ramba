@@ -287,7 +287,7 @@ def show_evolution_nolegend(sample_img, dataset, model, nonwater=0, water=1, wat
     ax[1,3].bar(bar_positions + bar_width/2, pred_erosion_deposition, bar_width, label='Predicted areas', color='white', edgecolor='k', hatch='xxx')
     
     ax[1,3].set_ylabel('Area (km²)', fontsize=13)
-    ax[1,3].set_xticks(bar_positions, fontsize=12)
+    ax[1,3].set_xticks(bar_positions)
     ax[1,3].set_xticklabels(categories, fontsize=12)
     ax[1,3].yaxis.tick_right()  # move ticks to the right
     ax[1,3].yaxis.set_label_position('right')  # move label to the right
