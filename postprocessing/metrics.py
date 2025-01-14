@@ -2,6 +2,7 @@ import torch
 from sklearn.metrics import (roc_curve, auc, precision_recall_curve, 
                             average_precision_score, balanced_accuracy_score)
 import matplotlib.pyplot as plt
+import numpy as np
 
 def compute_metrics(pred, target, nonwater_value=0, water_value=1, water_threshold=0.5):
     '''
@@ -87,3 +88,125 @@ def single_roc_curve(model, dataset, sample, train_val_test='testing', device='c
         plt.show()
 
     return fpr, tpr, roc_auc if get_avg else None
+
+def get_total_roc_curve(model, dataset, train_val_test='testing', model_type='min loss', spatial_temporal='spatial', device='cuda:0', save_img=False):
+    '''
+    Plot the average ROC curve for a given dataset by averaging all samples. 
+    To ensure that FPR and TPR have the same dimension across all samples, these metrics are resampled and interpolated to a fixed amount of elements.
+
+    Inputs:
+           model = class, deep-learning model to be validated/tested
+           dataset = TensorDataset, contains inputs and targets for the model
+           train_val_test = str, specifies what the images are used for.
+                            available options: 'training', 'validation' and 'testing'
+           model_type = str, specifies which model is considered
+                        default: 'min loss'. Other available option: 'max recall'
+           spatial_temporal = str, specifies if model is trained with spatial or temporal dataset
+                              default: 'spatial'. Other available option: 'temporal' 
+           device = str, specifies device where memory is allocated for performing the computations
+                    default: 'cuda' (GPU), other availble option: 'cpu'
+           save_img = bool, sets whether image is saved in the repository.
+                      default: False 
+    
+    Output:
+           None, plots the average ROC curve
+    '''
+    fprs = []
+    tprs = []
+    roc_aucs = []
+
+    # loop through all dataset samples
+    for sample in range(len(dataset)):
+        fpr, tpr, roc_auc = single_roc_curve(model, dataset, sample, train_val_test, device, get_avg=True)
+        
+        # resample lists to have same dimension and be able to average them 
+        fpr_resam = np.interp(np.linspace(0, 120000, 120000), np.arange(len(fpr)), fpr)
+        tpr_resam = np.interp(np.linspace(0, 120000, 120000), np.arange(len(tpr)), tpr)
+        
+        fprs.append(fpr_resam), tprs.append(tpr_resam), roc_aucs.append(roc_auc)
+    
+    # average all arrays 
+    avg_fpr = np.mean(fprs, axis=0)
+    avg_tpr = np.mean(tprs, axis=0)
+    avg_roc_auc = np.mean(roc_aucs)
+
+    plt.figure()
+    plt.plot(avg_fpr, avg_tpr, color='navy', lw=2.5, label=f'ROC curve (AUC = {avg_roc_auc:.3f})')
+    plt.fill_between(avg_fpr, avg_tpr, color='palegoldenrod')
+    plt.plot([0, 1], [0, 1], color='red', lw=2.5, linestyle='--', label=f'Random classifier = 0.5')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.0])
+    plt.xlabel('False Positive Rate [-]', fontsize=18)
+    plt.ylabel('True Positive Rate [-]', fontsize=18)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    # plt.title(f'Average Receiver Operating Characteristic curve\n for {train_val_test} dataset with {model_type} model', fontsize=16)
+    plt.legend(bbox_to_anchor=(1.01,0.25), fontsize=16)
+    plt.tight_layout()
+    
+    if save_img:
+        plt.savefig(rf'images\report\4_results\roc_{train_val_test}_{model_type}_{spatial_temporal}.png', bbox_inches='tight', dpi=1000)
+        plt.show()
+        plt.close()  # close the figure to free memory
+    else:
+        plt.show()
+    return None
+
+def single_pr_curve(model, dataset, sample, train_val_test='testing', device='cuda:0', get_avg=False):
+    '''
+    Plot or return the Precision, Recall and Average Precision area of a single sample.
+
+    Inputs:
+           model = class, deep-learning model to be validated/tested
+           dataset = TensorDataset, contains inputs and targets for the model
+           sample = int, specifies the input-target combination
+           train_val_test = str, specifies what the images are used for.
+                            available options: 'training', 'validation' and 'testing'
+           device = str, specifies device where memory is allocated for performing the computations
+                    default: 'cuda' (GPU), other availble option: 'cpu'
+           get_avg = bool, sets whether the function plots PR curve or only returns precision, recall, 
+                     average precision score, positive ratio, and best threshold 
+                     default: False, plots the curve
+    Output:
+           None or precision, recall, ap, positive_ratio, and best_thr depending on get_avg key
+    '''
+    # need internal import statement to avoid circular imports
+    from model.train_eval import get_predictions
+
+    single_input = dataset[sample][0].to(device)
+    single_target = dataset[sample][1]
+    
+    target_flat = single_target.flatten().to(device)
+
+    prediction = get_predictions(model, single_input.unsqueeze(0), device)
+    prediction_flat = prediction.detach().flatten() # unsqueeze needed to match dimensions
+    
+    # compute PR curve and average score
+    precision, recall, thresholds = precision_recall_curve(target_flat.cpu(), prediction_flat.cpu())
+    ap = average_precision_score(target_flat.cpu(), prediction_flat.cpu())
+    
+    # compute optimal threshold by maximising F1-score
+    f1_scores = 2 * (precision * recall) / (precision + recall)
+    best_idx = np.argmax(f1_scores)
+    best_thr = thresholds[best_idx]
+    
+    # random classifier
+    positive_ratio = torch.sum(target_flat)/len(target_flat)
+    positive_ratio = positive_ratio.cpu()
+
+    if not get_avg:
+        plt.figure()
+        plt.plot(recall, precision, color='navy', lw=2.5, label=f'PR curve (AUC = {ap:.3f})')
+        plt.fill_between(recall, precision,  color='palegoldenrod')
+        plt.axhline(positive_ratio, color='red', lw=2.5, linestyle='--', label=f'Random classifier (AP = {positive_ratio:.3f})')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.0])
+        plt.xlabel('Recall [-]', fontsize=14)
+        plt.ylabel('Precision [-]', fontsize=14)
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(f'Precision Recall curve\n for {train_val_test} sample {sample}', fontsize=16)
+        plt.legend(loc="upper right", fontsize=12)
+        plt.show()
+ 
+    return precision, recall, ap, positive_ratio, best_thr if get_avg else None
