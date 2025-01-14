@@ -9,7 +9,7 @@ import pandas as pd
 
 def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, model, month_dataset, init_hid_dim, 
                         kernel_size, pooling, learning_rate, step_size, gamma, batch_size, num_epochs, 
-                        water_threshold, dir_output=r'model\losses_metrics'):
+                        water_threshold, dir_output='model\\losses_metrics'):
     '''
     Save training and validation losses and metrics in a .csv file. Could be used for a later visualisation of the losses and metrics evolution. 
     It is assumed that the model performs 4 downsamples.
@@ -66,7 +66,7 @@ def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, mod
     return None
 
 def save_model_path(model, spatial_temporal, loss_recall, month_dataset, init_hid_dim, kernel_size, pooling, learning_rate, step_size, gamma, batch_size, num_epochs,
-                    water_threshold, dir_output=r'model\models_trained'):
+                    water_threshold, dir_output='model\\models_trained'):
     '''
     Save the model .pth file path from the training notebook. It is then loaded in a different notebook for testing the model.
     It is assumed that the model performs 4 downsamples.
