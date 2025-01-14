@@ -3,6 +3,7 @@
 import os
 import torch
 import copy
+from pathlib import Path
 
 import pandas as pd
 
@@ -40,6 +41,8 @@ def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, mod
            None, saves a .csv file with training and validation losses and metrics
     '''
     model_name = model.__class__.__name__
+
+    dir_output = Path(dir_output)
 
     ### check if dir_output exists if not, create it
     if not os.path.exists(dir_output):
