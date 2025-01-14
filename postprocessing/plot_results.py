@@ -232,7 +232,8 @@ def show_evolution_nolegend(sample_img, dataset, model, nonwater=0, water=1, wat
            None, it plots the inputs, target, and predicted images as well as the misclassification map 
                  and barplot of the areas of erosion and deposition 
     '''
-    input_img = dataset[sample_img][0].unsqueeze(0)
+    # input_img = dataset[sample_img][0].unsqueeze(0)
+    input_img = dataset[sample_img][0].unsqueeze(0).to(device)  # Move input to the same device as the model
     target_img = dataset[sample_img][1].cpu()
 
     prediction = model(input_img).detach().cpu()
