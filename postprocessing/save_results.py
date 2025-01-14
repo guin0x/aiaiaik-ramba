@@ -41,6 +41,10 @@ def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, mod
     '''
     model_name = model.__class__.__name__
 
+    ### check if dir_output exists if not, create it
+    if not os.path.exists(dir_output):
+        os.makedirs(dir_output)
+
     # assumes that 4 downsamples are performed (4dwns) 
     file_name = f'{model_name}_{spatial_temporal}_losses&metrics_month{month_dataset}_4dwns_{init_hid_dim}ihiddim_{kernel_size}ker_{pooling}pool_{learning_rate}ilr_'
     if (step_size and gamma) is not None:
