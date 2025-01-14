@@ -9,7 +9,7 @@ import pandas as pd
 
 def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, model, month_dataset, init_hid_dim, 
                         kernel_size, pooling, learning_rate, step_size, gamma, batch_size, num_epochs, 
-                        water_threshold, dir_output='model\\losses_metrics'):
+                        water_threshold, dir_output='model/losses_metrics'):
     '''
     Save training and validation losses and metrics in a .csv file. Could be used for a later visualisation of the losses and metrics evolution. 
     It is assumed that the model performs 4 downsamples.
@@ -35,7 +35,7 @@ def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, mod
            water_threshold = float, threshold for binary classification.
                              default: 0.5, accepted range 0-1 (excluded)
            dir_output = str, general path where .csv file is stored
-                        default: 'model\losses_metrics'
+                        default: 'model/losses_metrics'
     
     Output: 
            None, saves a .csv file with training and validation losses and metrics
@@ -66,7 +66,7 @@ def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, mod
     return None
 
 def save_model_path(model, spatial_temporal, loss_recall, month_dataset, init_hid_dim, kernel_size, pooling, learning_rate, step_size, gamma, batch_size, num_epochs,
-                    water_threshold, dir_output='model\\models_trained'):
+                    water_threshold, dir_output='model/models_trained'):
     '''
     Save the model .pth file path from the training notebook. It is then loaded in a different notebook for testing the model.
     It is assumed that the model performs 4 downsamples.
@@ -98,7 +98,7 @@ def save_model_path(model, spatial_temporal, loss_recall, month_dataset, init_hi
            alpha_dep = float, weight of the deposition loss term within the total loss.
                        default: 1e-3. Suggested range [1e-5, 1e-2]
            dir_output = str, general path where .pth file is stored
-                        default: 'model\models_trained'
+                        default: 'model/models_trained'
     
     Output:
            None, saves the model .pth path
