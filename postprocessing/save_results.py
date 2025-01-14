@@ -105,6 +105,8 @@ def save_model_path(model, spatial_temporal, loss_recall, month_dataset, init_hi
     '''
     best_model = copy.deepcopy(model)
 
+    dir_output = Path(dir_output)
+
     model_name = model.__class__.__name__
     file_name = f'{model_name}_b{loss_recall}_{spatial_temporal}_month{month_dataset}_4dwns_{init_hid_dim}ihiddim_{kernel_size}ker_{pooling}pool_{learning_rate}ilr_'
     if (step_size and gamma) is not None:
