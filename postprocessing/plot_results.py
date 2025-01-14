@@ -15,7 +15,7 @@ from matplotlib.colors import ListedColormap
 from scipy.stats import gaussian_kde
 from torch.utils.data import DataLoader
 
-from model.train_eval import validation_unet, get_predictions, choose_loss, get_erosion_deposition
+from model.train_eval import validation_unet, get_predictions, get_erosion_deposition
 from postprocessing.metrics import *
 
 def load_losses_metrics(path):
