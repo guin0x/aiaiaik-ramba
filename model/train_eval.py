@@ -153,3 +153,41 @@ def validation_unet(model, loader, nonwater=0, water=1, device='cuda:0', loss_f=
     csi_scores = np.array(csi_scores).mean()    
 
     return losses, accuracies, precisions, recalls, f1_scores, csi_scores
+
+def get_erosion_deposition(previous_year_img, current_year_img, nonwater=0, water=1, pixel_size=60):
+    '''
+    Compute the total areas of erosion and deposition. 
+    Makes a pixel-wise comparison of the last input year and the target year image. 
+    The area of erosion is the sum of 'water' pixels of the target year image 
+    that were 'non-water' in the last input year image. 
+    The area of deposition is the sum of 'non-water' pixels of the target year image
+    that were 'water' in the last input year image.
+
+    The total number of pixels of both the areas of erosion and deposition are multiplied 
+    by the pixel area (the square of `pixel_size`).
+
+    Inputs:
+           previous_year_img = 2D array or tensor, representing previous year image
+           current_year_img = 2D array or tensor, representing current year image
+           nonwater = int, 'non-water' class pixel value
+                      default: 0 (scaled classification). 
+                      If the original classification is used, this key should be set to 1
+           water = int, 'water' class pixel value
+                   default: 1 (scaled classification). 
+                   If the original classification is used, this should be set to 2
+           pixel_size = int, image pixel resolution (m). Used for computing the erosion and deposition areas
+                        default: 60, exported image resolution from Google Earth Engine
+    
+    Output:
+           list, contains total areas of erosion and deposition in km^2
+    '''  
+    # sum erosion and deposition pixels
+    erosion = torch.sum((previous_year_img == nonwater) & (current_year_img == water))
+    deposition = torch.sum((previous_year_img == water) & (current_year_img == nonwater))
+    
+    # calculate areas of erosion and deposition
+    factor = (pixel_size**2) / (1000**2) # conversion factor to get pixel area in km^2
+    erosion_areas = erosion * factor
+    deposition_areas = deposition * factor
+    # .item() is required to correctly save the float number ### check
+    return [erosion_areas.item(), deposition_areas.item()] 

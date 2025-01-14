@@ -15,7 +15,7 @@ from matplotlib.colors import ListedColormap
 from scipy.stats import gaussian_kde
 from torch.utils.data import DataLoader
 
-from model.train_eval import validation_unet, get_predictions
+from model.train_eval import validation_unet, get_predictions, get_erosion_deposition
 from postprocessing.metrics import *
 
 def load_losses_metrics(path):
@@ -232,8 +232,8 @@ def show_evolution_nolegend(sample_img, dataset, model, nonwater=0, water=1, wat
            None, it plots the inputs, target, and predicted images as well as the misclassification map 
                  and barplot of the areas of erosion and deposition 
     '''
-    # input_img = dataset[sample_img][0].unsqueeze(0)
-    input_img = dataset[sample_img][0].unsqueeze(0).to(device)  # Move input to the same device as the model
+    
+    input_img = dataset[sample_img][0].unsqueeze(0).to(device)  
     target_img = dataset[sample_img][1].cpu()
 
     prediction = model(input_img).detach().cpu()
