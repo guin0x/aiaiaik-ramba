@@ -13,12 +13,10 @@ class TemporalConv(nn.Module):
             padding=(0, kernel_size[1] // 2, kernel_size[2] // 2),  # Padding only for spatial dims
             bias=False
         )
-        self.bn = nn.BatchNorm3d(out_channels)
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
         x = self.conv3d(x)  # Apply 3D convolution
-        x = self.bn(x)
         x = self.relu(x)
         x = x.squeeze(2)  # Remove temporal dimension after summarization
         return x

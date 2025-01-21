@@ -210,3 +210,74 @@ def single_pr_curve(model, dataset, sample, train_val_test='testing', device='cu
         plt.show()
  
     return precision, recall, ap, positive_ratio, best_thr if get_avg else None
+    
+def get_total_pr_curve(model, dataset, train_val_test='testing', model_type= 'min loss', spatial_temporal='spatial', device='cuda:0', save_img=False):
+    '''
+    Plot the average PR curve for a given dataset by averaging all samples. 
+    To ensure that Precision and Recall have the same dimension across all samples, these metrics are resampled and interpolated to a fixed amount of elements.
+
+    Inputs:
+           model = class, deep-learning model to be validated/tested
+           dataset = TensorDataset, contains inputs and targets for the model
+           train_val_test = str, specifies what the images are used for.
+                            available options: 'training', 'validation' and 'testing'
+           model_type = str, specifies which model is considered
+                        default: 'min loss'. Other available option: 'max recall'
+           spatial_temporal = str, specifies if model is trained with spatial or temporal dataset
+                              default: 'spatial'. Other available option: 'temporal' 
+           device = str, specifies device where memory is allocated for performing the computations
+                    default: 'cuda' (GPU), other availble option: 'cpu'
+           save_img = bool, sets whether image is saved in the repository.
+                      default: False 
+    
+    Output:
+           None, plots the average PR curve
+    '''
+    precisions = []
+    recalls = []
+    aps = []
+    positive_ratios = []
+    best_thrs = []
+    
+    # loop through all samples
+    for sample in range(len(dataset)):
+        precision, recall, ap, positive_ratio, best_thr = single_pr_curve(model, dataset, sample, train_val_test, device, get_avg=True)
+        
+        # resample lists to have same dimensions and be able to average them 
+        prec_resam = np.interp(np.linspace(0, 1, 500000), np.linspace(0, 1, len(precision)), precision)
+        rec_resam = np.interp(np.linspace(0, 1, 500000), np.linspace(0, 1, len(recall)), recall)
+        
+        precisions.append(prec_resam), recalls.append(rec_resam), aps.append(ap), positive_ratios.append(positive_ratio), best_thrs.append(best_thr)
+    
+    # average all arrays 
+    avg_prec = np.mean(precisions, axis=0)
+    avg_rec = np.mean(recalls, axis=0)
+    avg_ap = np.mean(aps)
+    avg_pos_ratio = np.mean(positive_ratios)
+    avg_best_thr = np.mean(best_thr)
+
+    plt.figure()
+    plt.plot(avg_rec, avg_prec, color='navy', lw=2.5, label=f'PR curve (AUC = {avg_ap:.3f})')
+    plt.fill_between(avg_rec, avg_prec,  color='palegoldenrod')
+    plt.axhline(avg_pos_ratio, color='red', lw=2.5, linestyle='--', label=f'Random classifier (AP = {avg_pos_ratio:.3f})')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.0])
+    plt.xlabel('Recall [-]', fontsize=18)
+    plt.ylabel('Precision [-]', fontsize=18)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    # plt.title(f'Average Precision Recall curve for {train_val_test} dataset\n' + 
+    #           rf'with {model_type} model and $w_{{thr}}$ = {avg_best_thr:.3f}', fontsize=16)
+    # # add note on optimal threshold
+    # formatted_best_thr = f'{avg_best_thr:.3f}'
+    # plt.annotate(f'Water threshold for\nmax F1-score: {formatted_best_thr}', xy=(0.505,0.75), fontsize=16, 
+    #              ha='center', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="lightgray"))
+    plt.legend(bbox_to_anchor=(0.9,0.145), fontsize=16)
+    
+    if save_img:
+        plt.savefig(rf'images\report\4_results\pr_{train_val_test}_{model_type}_{spatial_temporal}.png', bbox_inches='tight', dpi=1000)
+        plt.show()
+        plt.close()  # close the figure to free memory
+    else:
+        plt.show()
+    return None

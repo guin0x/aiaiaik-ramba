@@ -233,7 +233,7 @@ def show_evolution_nolegend(sample_img, dataset, model, nonwater=0, water=1, wat
                  and barplot of the areas of erosion and deposition 
     '''
     
-    input_img = dataset[sample_img][0].unsqueeze(0).to(device)  
+    input_img = dataset[sample_img][0].unsqueeze(0).to(device) 
     target_img = dataset[sample_img][1].cpu()
 
     prediction = model(input_img).detach().cpu()
@@ -1237,3 +1237,78 @@ def metrics_thresholds(model, data_loader, loss_f='BCE', device='cuda:0', save_i
     else:
         plt.show()
     return None
+
+
+def show_evolution_nolegend_3d(sample_img, dataset, model, nonwater=0, water=1, water_threshold=0.5, pixel_size=60, device='cuda:0', 
+                            train_val_test='testing', loss_recall='min loss', spatial_temporal='temporal', save_img=False):
+    """
+    Adjusted for 3D model with temporal input data.
+    """
+    # Ensure the input has the correct shape (N, C, T, H, W)
+    input_img = dataset[sample_img][0].unsqueeze(0).to(device)  # Add batch dimension
+    target_img = dataset[sample_img][1].cpu()
+
+    # Get model prediction
+    with torch.no_grad():
+        prediction = model(input_img).detach().cpu()  # Shape: (N, C, H, W)
+
+    # Binary thresholding
+    prediction_binary = (prediction >= water_threshold).float()
+
+    # Calculate misclassification map
+    diff = prediction_binary.squeeze(0).squeeze(0) - target_img  # Remove batch and channel dims
+
+    # Set up figure
+    shp = target_img.shape
+    x_ticks = np.arange(0, shp[1], 300)
+    y_ticks = np.arange(0, shp[0], 300)
+    x_tick_labels = [round(tick * 60 / 1000, 2) for tick in x_ticks]
+    y_tick_labels = [round(tick * 60 / 1000, 2) for tick in y_ticks]
+
+    fig, ax = plt.subplots(2, 4, figsize=(10, 10))
+
+    # Custom colormaps
+    grey_cmap = ListedColormap(['palegoldenrod', 'navy'])
+    diff_cmap = ListedColormap(['red', 'white', 'green'])
+    grey_diff_cmap = ListedColormap(['black', 'white'])
+
+    # Display temporal inputs
+    temporal_inputs = input_img[0]  # Shape: (C, T, H, W)
+    T = temporal_inputs.shape[1]
+    for i in range(T):
+        ax[0, i].imshow(temporal_inputs[0, i].cpu(), cmap=grey_cmap, vmin=0)
+        ax[0, i].set_title(f'Input year {1988 + i}', fontsize=13)
+
+    # Display target, prediction, and misclassification
+    im1 = ax[1, 0].imshow(target_img, cmap=grey_cmap, vmin=0)
+    ax[1, 1].imshow(prediction_binary.squeeze(0).squeeze(0), cmap=grey_cmap)
+    im2 = ax[1, 2].imshow(diff, cmap=diff_cmap, vmin=-1, vmax=1)
+    ax[1, 2].imshow(target_img, cmap=grey_diff_cmap, vmin=0, alpha=0.2)
+
+    # Compute erosion and deposition areas
+    real_erosion_deposition = get_erosion_deposition(temporal_inputs[0, -1].cpu(), target_img, nonwater, water, pixel_size)
+    pred_erosion_deposition = get_erosion_deposition(temporal_inputs[0, -1].cpu(), prediction_binary.squeeze(0).squeeze(0), nonwater, water, pixel_size)
+
+    # Bar plot for erosion and deposition areas
+    categories = ['Erosion', 'Deposition']
+    bar_width = 0.3
+    bar_positions = np.arange(len(categories))
+
+    ax[1, 3].bar(bar_positions - bar_width / 2, real_erosion_deposition, bar_width, label='Real areas', color='white', edgecolor='k', hatch='///')
+    ax[1, 3].bar(bar_positions + bar_width / 2, pred_erosion_deposition, bar_width, label='Predicted areas', color='white', edgecolor='k', hatch='xxx')
+
+    # Adjust layout
+    ax[1, 3].set_ylabel('Area (km²)', fontsize=13)
+    ax[1, 3].set_xticks(bar_positions)
+    ax[1, 3].set_xticklabels(categories, fontsize=12)
+    ax[1, 3].yaxis.tick_right()
+    ax[1, 3].yaxis.set_label_position('right')
+    ax[1, 3].tick_params(left=False)
+
+    # Final adjustments and save/show
+    fig.subplots_adjust(wspace=0.1, hspace=0.2)
+    if save_img:
+        plt.savefig(f'output_{sample_img}.png', bbox_inches='tight', dpi=1000)
+        plt.close(fig)
+    else:
+        plt.show()
