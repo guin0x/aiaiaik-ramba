@@ -22,8 +22,8 @@ This part involves acquiring the NDVI data for the Region of Interest (ROI) and 
 2. **Calculate NDVI (Normalized Difference Vegetation Index)**  
    - NDVI is calculated differently for each Landsat mission due to differences in band configurations:
      - **Landsat 5 (1988–1999)**  
-     - **Landsat 7 (2000–2017)**  
-     - **Landsat 8 (2018–2021)**  
+     - **Landsat 7 (2000–2013)**  
+     - **Landsat 8 (2014–2021)**  
    - **Function/Notebook Used**:  
      - `NDVI.ipynb` calculates the NDVI for a given Landsat tile.
 
