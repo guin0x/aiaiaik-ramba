@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
-def save_losses_metrics(train_losses, val_losses, metrics, batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/losses_metrics'):
+def save_losses_metrics(machine, train_losses, val_losses, metrics, batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/losses_metrics'):
     """
     Save training and validation losses and metrics in a .csv file. 
     The file name includes only the hyperparameters that are being optimized.
@@ -30,7 +30,7 @@ def save_losses_metrics(train_losses, val_losses, metrics, batch_size, learning_
     dir_output.mkdir(parents=True, exist_ok=True)
 
     # Generate a simplified file name
-    file_name = f"losses_metrics_NDVI_bs{batch_size}_lr{learning_rate}_hid{init_hid_dim}_epoch{epochs}.csv"
+    file_name = f"{machine}_losses_metrics_NDVI_bs{batch_size}_lr{learning_rate}_hid{init_hid_dim}_epoch{epochs}.csv"
     save_path = dir_output / file_name
 
     # Prepare the data for saving
@@ -52,7 +52,7 @@ def save_losses_metrics(train_losses, val_losses, metrics, batch_size, learning_
     print(f"Metrics saved at: {save_path}")
     return None
 
-def save_model_path(model, batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/models_trained'):
+def save_model_path(machine, model, batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/models_trained'):
     """
     Save the model .pth file path from the training notebook. It is then loaded in a different notebook for testing the model.
     Includes only the parameters that were optimized in the file name.
@@ -76,7 +76,7 @@ def save_model_path(model, batch_size, learning_rate, init_hid_dim, epochs, dir_
 
     # Generate a simplified file name
     model_name = model.__class__.__name__
-    file_name = f"{model_name}_NDVI_bs{batch_size}_lr{learning_rate}_hid{init_hid_dim}_epoch{epochs}.pth"
+    file_name = f"{model_name}_{machine}_NDVI_bs{batch_size}_lr{learning_rate}_hid{init_hid_dim}_epoch{epochs}.pth"
     
     # Full save path
     save_path = dir_output / file_name
