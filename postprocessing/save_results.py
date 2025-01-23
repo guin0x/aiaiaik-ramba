@@ -7,119 +7,81 @@ from pathlib import Path
 
 import pandas as pd
 
-def save_losses_metrics(train_losses, val_losses, metrics, spatial_temporal, model, month_dataset, init_hid_dim, 
-                        kernel_size, pooling, learning_rate, step_size, gamma, batch_size, num_epochs, 
-                        water_threshold, dir_output='model/losses_metrics'):
-    '''
-    Save training and validation losses and metrics in a .csv file. Could be used for a later visualisation of the losses and metrics evolution. 
-    It is assumed that the model performs 4 downsamples.
-
+def save_losses_metrics(train_losses, val_losses, metrics, batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/losses_metrics'):
+    """
+    Save training and validation losses and metrics in a .csv file. 
+    The file name includes only the hyperparameters that are being optimized.
+    
     Inputs:
            train_losses = list or array, contains training losses
            val_losses = list or array, contains validation losses
            metrics = list of lists, each containing validation metrics (accuracy, precision, recall, f1_score, csi)
-           spatial_temporal = str, specifies if model is trained with spatial or temporal dataset
-                              default: 'spatial'. Other available option: 'temporal'
-           model = class, trained deep-learning model to be validated/tested
-           month_dataset = int, low-flow season month from which images are taken for the dataset.
-                           Available options: 1, 2, 3, and 4.
-           init_hid_dim = int, initial hidden dimension of the model after first convolution
-           kernel_size = int, size of the convolutional kernels
-           pooling = str, pooling hyperparameter
-                     Available options: 'max', 'avg'.
-           learning_rate = float, learning rate
-           step_size = int, epoch step after which learning rate is multiplied by `gamma`
-           gamma = float, multiplication factor for adapting the learning rate every `step_size` epochs 
            batch_size = int, number of samples per batch
-           num_epochs = int, number of training epochs
-           water_threshold = float, threshold for binary classification.
-                             default: 0.5, accepted range 0-1 (excluded)
-           dir_output = str, general path where .csv file is stored
+           learning_rate = float, learning rate
+           init_hid_dim = int, initial hidden dimension of the model after first convolution
+           dir_output = str, directory where the .csv file will be stored
                         default: 'model/losses_metrics'
     
     Output: 
            None, saves a .csv file with training and validation losses and metrics
-    '''
-    model_name = model.__class__.__name__
-
+    """
+    # Ensure the output directory exists
     dir_output = Path(dir_output)
+    dir_output.mkdir(parents=True, exist_ok=True)
 
-    ### check if dir_output exists if not, create it
-    if not os.path.exists(dir_output):
-        os.makedirs(dir_output)
+    # Generate a simplified file name
+    file_name = f"losses_metrics_NDVI_bs{batch_size}_lr{learning_rate}_hid{init_hid_dim}_epoch{epochs}.csv"
+    save_path = dir_output / file_name
 
-    # assumes that 4 downsamples are performed (4dwns) 
-    file_name = f'{model_name}_{spatial_temporal}_losses&metrics_month{month_dataset}_4dwns_{init_hid_dim}ihiddim_{kernel_size}ker_{pooling}pool_{learning_rate}ilr_'
-    if (step_size and gamma) is not None:
-        file_name = file_name + f'{step_size}step_{gamma}gamma_'
-        file_name = file_name + f'{batch_size}batch_{num_epochs}epochs_{water_threshold}wthr'
-    else:
-        file_name = file_name + f'{batch_size}batch_{num_epochs}epochs_{water_threshold}wthr'
-
-    save_path = os.path.join(dir_output, file_name + '.csv')
-    losses_metrics = {'Training loss': train_losses, 'Validation loss': val_losses, 'Accuracy': metrics[0], 
-                      'Precision': metrics[1], 'Recall': metrics[2], 'F1-score': metrics[3], 'CSI-score': metrics[4]}
+    # Prepare the data for saving
+    losses_metrics = {
+        'Training loss': train_losses, 
+        'Validation loss': val_losses, 
+        'Accuracy': metrics[0], 
+        'Precision': metrics[1], 
+        'Recall': metrics[2], 
+        'F1-score': metrics[3], 
+        'CSI-score': metrics[4]
+    }
     
+    # Save as a CSV file
     df = pd.DataFrame(losses_metrics)
     df.to_csv(save_path, header=True, index=False)
-    print(save_path)
+    
+    # Print confirmation
+    print(f"Metrics saved at: {save_path}")
     return None
 
-def save_model_path(model, spatial_temporal, loss_recall, month_dataset, init_hid_dim, kernel_size, pooling, learning_rate, step_size, gamma, batch_size, num_epochs,
-                    water_threshold, dir_output='model/models_trained'):
-    '''
+def save_model_path(model, batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/models_trained'):
+    """
     Save the model .pth file path from the training notebook. It is then loaded in a different notebook for testing the model.
-    It is assumed that the model performs 4 downsamples.
-
+    Includes only the parameters that were optimized in the file name.
+    
     Inputs:
            model = class, trained deep-learning model to be validated/tested
-           spatial_temporal = str, specifies if model is trained with spatial or temporal dataset
-                              default: 'spatial'. Other available option: 'temporal'
-           loss_recall = str, specifies the model type, whether the one with minimum validatoin loss or the one with maximum validation recall.
-                         Available options: 'min loss', 'max recall'
-           month_dataset = int, low-flow season month from which images are taken for the dataset.
-                           Available options: 1, 2, 3, and 4.
-           init_hid_dim = int, initial hidden dimension of the model after first convolution
-           kernel_size = int, size of the convolutional kernels
-           pooling = str, pooling hyperparameter
-                     Available options: 'max', 'avg'.
-           learning_rate = float, learning rate
-           step_size = int, epoch step after which learning rate is multiplied by `gamma`
-           gamma = float, multiplication factor for adapting the leabrning rate every `step_size` epochs 
            batch_size = int, number of samples per batch
-           num_epochs = int, number of training epochs
-           water_threshold = float, threshold for binary classification.
-                             default: 0.5, accepted range 0-1 (excluded)
-           physics = bool, sets whether physics-induced loss terms (total areas of erosion
-                     and deposition) are included in the loss.
-                     default: False, not included
-           alpha_er = float, weight of the erosion loss term within the total loss.
-                      default: 1e-2. Suggested range [1e-5, 1e-2] 
-           alpha_dep = float, weight of the deposition loss term within the total loss.
-                       default: 1e-3. Suggested range [1e-5, 1e-2]
+           learning_rate = float, learning rate
+           init_hid_dim = int, initial hidden dimension of the model after first convolution
            dir_output = str, general path where .pth file is stored
                         default: 'model/models_trained'
     
     Output:
            None, saves the model .pth path
-    '''
+    """
     best_model = copy.deepcopy(model)
 
+    # Ensure the output directory exists
     dir_output = Path(dir_output)
-    if not os.path.exists(dir_output):
-        os.makedirs(dir_output)
+    dir_output.mkdir(parents=True, exist_ok=True)
 
+    # Generate a simplified file name
     model_name = model.__class__.__name__
-    file_name = f'{model_name}_b{loss_recall}_{spatial_temporal}_month{month_dataset}_4dwns_{init_hid_dim}ihiddim_{kernel_size}ker_{pooling}pool_{learning_rate}ilr_'
-    if (step_size and gamma) is not None:
-        file_name = file_name + f'{step_size}step_{gamma}gamma_'
-        file_name = file_name + f'{batch_size}batch_{num_epochs}epochs_{water_threshold}wthr'
-    else:
-        file_name = file_name + f'{batch_size}batch_{num_epochs}epochs_{water_threshold}wthr'
+    file_name = f"{model_name}_NDVI_bs{batch_size}_lr{learning_rate}_hid{init_hid_dim}_epoch{epochs}.pth"
     
-    save_path = os.path.join(dir_output, file_name + '.pth')
-    print(save_path)
+    # Full save path
+    save_path = dir_output / file_name
     
+    # Save the model
     torch.save(best_model.state_dict(), save_path)
     return None
 

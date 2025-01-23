@@ -65,6 +65,8 @@ def training_unet(model, loader, optimizer, nonwater=0, water=1, pixel_size=60, 
     for batch in loader:
         input = batch[0].to(device)
         target = batch[1].to(device)
+        target = target.float()  # Convert target tensor to float
+
 
         # get predictions
         predictions = get_predictions(model, input, device=device)
