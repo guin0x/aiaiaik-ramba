@@ -52,7 +52,11 @@ def save_losses_metrics(machine, train_losses, val_losses, metrics, batch_size, 
     print(f"Metrics saved at: {save_path}")
     return None
 
+<<<<<<< Updated upstream
 def save_model_path(machine, model, batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/models_trained'):
+=======
+def save_model_path(machine,model,batch_size, learning_rate, init_hid_dim, epochs, dir_output='model/models_trained'):
+>>>>>>> Stashed changes
     """
     Save the model .pth file path from the training notebook. It is then loaded in a different notebook for testing the model.
     Includes only the parameters that were optimized in the file name.

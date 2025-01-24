@@ -1343,7 +1343,7 @@ def show_evolution_nolegend_3d(sample_img, dataset, model, nonwater=0, water=1, 
 
     # Custom colormaps
     grey_cmap = ListedColormap(['palegoldenrod', 'navy'])  # For binary river images
-    ndvi_cmap = 'YlGn'  # NDVI visualization
+    ndvi_cmap = 'RdYlGn'  # NDVI visualization
     diff_cmap = ListedColormap(['red', 'white', 'green'])
     grey_diff_cmap = ListedColormap(['black', 'white'])
 
@@ -1355,10 +1355,10 @@ def show_evolution_nolegend_3d(sample_img, dataset, model, nonwater=0, water=1, 
     for i in range(4):
         ax[0, i].imshow(input_img[0][0, i].cpu(), cmap=grey_cmap, vmin=0)
         ax[0, i].set_title(f'Binary - Year {year[i]}', fontsize=13)
-
+    
     # Plot corresponding NDVI images (second channel)
     for i in range(4):
-        ax[1, i].imshow(input_img[0][1, i].cpu(), cmap=ndvi_cmap, vmin=0, vmax=1)
+        ax[1, i].imshow(input_img[0][1, i].cpu(), cmap=ndvi_cmap, vmin=-0.2, vmax=0.3)
         ax[1, i].set_title(f'NDVI - Year {year[i]}', fontsize=13)
 
     # Adjust subplot formatting
