@@ -66,4 +66,4 @@ This part includes reprojecting, merging, clipping, and transforming the NDVI da
 6. **Transform the tiles to match binary files**  
    - Rotate and scale NDVI tiles to match the orientation of binary classification tiles (river flow oriented top to bottom).  
    - **Function/Notebook Used**:  
-     - `transform_image.ipynb` performs the transformation using functions adapted from Antonio’s repository.
+     - `transform_ndvi.ipynb` performs the transformation using functions adapted from Antonio’s repository.
