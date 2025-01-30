@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # h5 data
-data/*.h5
+data/
 
 # Distribution / packaging
 .Python
