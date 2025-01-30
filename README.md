@@ -1,6 +1,6 @@
 # aiaiaik-ramba
 
-This repository contains the implementation of the project **"Enhancing JamUNet for Plan(t)form Morphodynamics Prediction Using Normalized Difference Vegetation Index (NDVI)"**. The aim of this project is to improve the prediction of channel changes in the Jamuna River using deep learning techniques. By leveraging binary water classification and NDVI data, this model helps distinguish between water and non-water areas while incorporating temporal dependencies through a 3D convolutional approach.
+This repository contains the implementation of the project **"Enhancing JamUNet for Plan(t)form Morphodynamics Prediction Using Normalized Difference Vegetation Index (NDVI)"**. The aim of this project is to improve the prediction of channel changes in the Jamuna River using deep learning techniques. By leveraging binary water classification and NDVI data, this model helps distinguish between water and non-water areas while incorporating temporal dependencies through a 3D convolutional approach. This project continues the work of Antonio Magherini, which can be found [here](https://github.com/antoniomagherini/jamunet-morpho-braided/)
 
 Key objectives:
 - Test and validate JamUNet results for binary classification.
