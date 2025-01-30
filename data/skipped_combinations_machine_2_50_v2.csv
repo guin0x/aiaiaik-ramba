@@ -1,4 +1,0 @@
-Batch Size,Learning Rate,Init Hid Dim
-32,0.01,32
-32,0.05,32
-32,0.1,32
