@@ -1,76 +1,79 @@
 # aiaiaik-ramba
 
-Disclaimer: This is assuming we continue using optical imagery. If we want to try with RADAR then we have to go back a few steps... and it's not entirely easy to process SAR images.
+This repository contains the implementation of the project **"Enhancing JamUNet for Plan(t)form Morphodynamics Prediction Using Normalized Difference Vegetation Index (NDVI)"**. The aim of this project is to improve the prediction of channel changes in the Jamuna River using deep learning techniques. By leveraging binary water classification and NDVI data, this model helps distinguish between water and non-water areas while incorporating temporal dependencies through a 3D convolutional approach.
 
-## Goals
-1. Enhance JamUNet's architecture and performance.
+Key objectives:
+- Test and validate JamUNet results for binary classification.
+- Introduce temporal dependencies via 3D convolution to improve morphodynamic predictions.
+- Utilize NDVI data to enhance the model's ability to infer vegetation changes.
 
-*MoSCoW (Must have, Should have, Could have, Won't have)*
+This repository includes all necessary scripts, notebooks, and instructions to generate datasets, train the models, and visualize the results.
 
-**Must:** Reproduce and Validate JamUNet
+The final visualization of our model's architecture is shown below.
 
-**Should:** Fix temporal error (with how the images are fed trhough at the moment)
 
-**Should:** add NDVI information (for vegetation as an indication for erosion of river channel)
+![alt text](image.png)
 
-**Should:** Explore more indexes (e.g LAI)
 
-**Could:** get yearly elevation data (DEM)
 
----
 
-## Data
-NDVI (1988-2016, resolution 0.001 arcsec): https://filesender.surf.nl/?s=download&token=539dd5e2-690e-4705-9aba-18aad9d92bfc
+## 1. Getting Started
 
-## Key Steps
+Create a new conda environment from the `env.yaml` as
 
-### 1. **Reproduce and Validate JamUNet**
-   - Recreate JamUNet as described in Magherini’s thesis using the GSWD dataset.
-   - Validate its performance on the Brahmaputra-Jamuna River test cases to establish a benchmark.
+```
+conda env create -f env.yaml
+```
 
----
+Once created, activate the environment with
+```
+conda activate aiaiai_env
+```
 
-### 2. **Enhance the Model Architecture**
-   - **Explore [ConvLSTMs](https://github.com/ndrplz/ConvLSTM_pytorch)**:
-     - Integrate ConvLSTMs to capture spatiotemporal dynamics in sequential imagery.
-     - Evaluate their performance in detecting long-term morphological changes (e.g., meander migration, erosion).
-   - **Multi-Modal Inputs**:
-     - Extend JamUNet to include additional inputs such as river discharge and vegetation indices (NDVI, for example).
-       - River discharge is harder to estimate directly from optical imagery but can be approximated using features such as the river's lateral extent or curvature. Geologically, increased curvature often correlates with sediment deposition at bends, forming levees that can eventually redirect the river (avulsion), which indirectly reflects discharge dynamics.
+Ensure `ipykernel` is installed with
+```
+conda install -n aiaiai_env ipykernel --update-deps --force-reinstall
+```
 
----
+## 2. Generating the datasets
 
-### 3. **Adopt Transfer Learning Strategies**
-Transfer learning involves leveraging models pre-trained on large datasets to accelerate training and improve performance on smaller, domain-specific datasets. 
-Below are a couple of different powerful models/approaches we could try.
+### 2.1 Generating binary dataset
 
-   - **Fine-Tune [Prithvi](https://huggingface.co/ibm-nasa-geospatial/Prithvi-100M)**:
-     - Leverage Prithvi’s pre-trained encoder for geospatial feature extraction.
-     - Train a customized decoder on the GSWD dataset to predict river morphological changes.
-   - **Use [TorchGeo](https://github.com/microsoft/torchgeo)**:
-     - Employ TorchGeo’s pre-trained geospatial models for benchmarking.
-     - Streamline data preprocessing with its specialized loaders and transformations.
+<div style="border: 1px solid red; padding: 10px; background-color: #fff3cd;">
+  <strong>⚠️ Attention:</strong> Please note that this dataset generation code only works on <strong>Windows</strong>. It does not work in the <strong>RunPod</strong> machines.
+</div>
 
----
+<br>
 
-### 4. **Experiment with Loss Functions**
+Run the `Prepare_Datasets.ipynb` Jupyter Notebook. It should create the following three files:
+```
+data/train_set.h5
+data/val_set.h5
+data/test_set.h5
+```
 
-Magherini used [Binary Cross Entropy (BCE)](https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a), a standard loss function for binary classification tasks like distinguishing between water and non-water pixels. While effective for pixel-level accuracy, BCE doesn’t account for spatial or temporal relationships between pixels, which are crucial for understanding long-term morphological changes.
+### 2.2 Generating NDVI dataset
 
-We could try:
+Follow the instructions in the [NDVI README.md](https://github.com/guin0x/aiaiaik-ramba/blob/main/NDVI_processing/README.md)
 
-   - **[Huber Loss](https://en.wikipedia.org/wiki/Huber_loss)**:
-     - Address outlier sensitivity in predictions, especially in areas with significant erosion or deposition changes. The Huber Loss acts like L2-loss for small errors but switches to L1-loss for larger errors (beyond some threshold), reducing impact of outliers.
-   - **Multi-Task Loss**:
-     - Simultaneously optimize for multiple objectives (e.g., water extent, erosion, deposition) to improve prediction accuracy, for example:
-       `Total Loss = α₁ × Loss₍water₎ + α₂ × Loss₍erosion₎ + ...`
-       
----
+<div style="border-left: 4px solid #3498db; padding: 10px; background-color: #f0f8ff;">
+  <strong>📝 Note:</strong> For easiness of reproduction, we have already stored all the data that would come out of the 
+  <code>NDVI_processing</code> pipeline under <code>data/ndvi/output_NDVI</code>. 
+  So you can skip <strong>Step 2.2</strong> and proceed to <strong>Step 3</strong>.
+</div>
 
-### 5. **Integrate Physics-Informed Neural Networks (PINNs)**
-   - Define governing equations (e.g., sediment continuity, shallow water equations, etc).
-   - Augment the loss function with physical residuals to enforce consistency with known river dynamics; for example:
-     `Total Loss = Prediction Loss + λ × Physics Residual Loss`
 
----
+## 3. Training the model
 
+Run the `NotebookNDVI.ipynb`, the models will be saved in `model/models_trained/*.pth` and the metrics saved in `model/losses_metrics/*.csv`
+
+<div style="border-left: 4px solid #3498db; padding: 10px; background-color: #f0f8ff;">
+  <strong>📝 Note:</strong> The hyperparameters used in <code>NotebookNDVI.ipynb</code> to train our final version of the model 
+  were found by performing <strong>hyperparameter optimization</strong>, which can be found under 
+  <code>notebookNDVI_hyper_opt_M1.ipynb</code> and <code>notebookNDVI_hyper_opt_M2.ipynb</code>.
+</div>
+
+
+## 4. Visualizing the results
+
+To visualize the results, run the `plotting_NDVI.ipynb`.
