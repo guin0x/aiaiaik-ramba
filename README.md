@@ -59,7 +59,7 @@ data/test_set.h5
 ```
 
 <div style="border: 1px solid red; padding: 10px; background-color: #fff3cd;">
-  <strong>⚠️ Attention:</strong> Please note that this dataset generation code only works on <strong>Windows</strong>. It does not work in the <strong>RunPod</strong> machines.</div><br>
+  <strong>⚠️ Attention:</strong> Please note that this dataset generation code only works on <strong>Windows</strong>. It does not work in the <strong>RunPod</strong> machines.</div>
 
 If you downloaded the data in step 1, you should have three different versions as shown below.
 
