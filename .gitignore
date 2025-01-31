@@ -6,7 +6,7 @@ __pycache__/
 # C extensions
 *.so
 
-# h5 data
+# data folder
 data/
 
 # Distribution / packaging

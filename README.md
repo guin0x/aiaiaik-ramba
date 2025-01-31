@@ -15,8 +15,6 @@ The final visualization of our model's architecture is shown below.
 ![alt text](image.png)
 
 
-
-
 ## 1. Getting Started
 
 Create a new conda environment from the `env.yaml` as
@@ -35,24 +33,15 @@ Ensure `ipykernel` is installed with
 conda install -n aiaiai_env ipykernel --update-deps --force-reinstall
 ```
 
+### (Optinal and highly recommended) Download all data
+
+<div style="border-left: 4px solid #3498db; padding: 10px; background-color: #f0f8ff;"><strong>📝 Note:</strong>If you follow this step, you can skip step **2. Generating the datasets**.</div> <br>
+
+Download the entire `data/` folder [here](www.google.com).
+
 ## 2. Generating the datasets
 
-### 2.1 Generating binary dataset
-
-<div style="border: 1px solid red; padding: 10px; background-color: #fff3cd;">
-  <strong>⚠️ Attention:</strong> Please note that this dataset generation code only works on <strong>Windows</strong>. It does not work in the <strong>RunPod</strong> machines.
-</div>
-
-<br>
-
-Run the `Prepare_Datasets.ipynb` Jupyter Notebook. It should create the following three files:
-```
-data/train_set.h5
-data/val_set.h5
-data/test_set.h5
-```
-
-### 2.2 Generating NDVI dataset
+### 2.1 Generating NDVI dataset
 
 Follow the instructions in the [NDVI README.md](https://github.com/guin0x/aiaiaik-ramba/blob/main/NDVI_processing/README.md)
 
@@ -62,10 +51,41 @@ Follow the instructions in the [NDVI README.md](https://github.com/guin0x/aiaiai
   So you can skip <strong>Step 2.2</strong> and proceed to <strong>Step 3</strong>.
 </div>
 
+### 2.2 Generating final dataset
+
+To prepare the final dataset which uses both the binary + NDVI data, run the `Prepare_Datasets.ipynb` Jupyter Notebook. It should create the following three files:
+```
+data/train_set.h5
+data/val_set.h5
+data/test_set.h5
+```
+
+<div style="border: 1px solid red; padding: 10px; background-color: #fff3cd;">
+  <strong>⚠️ Attention:</strong> Please note that this dataset generation code only works on <strong>Windows</strong>. It does not work in the <strong>RunPod</strong> machines. Hoever, you can download the data [here](https://drive.google.com/drive/folders/1tv6e5WHoz9MmreHLGOsXqiS-3xOpODY_?usp=share_link). After downloading, include them in a folder as shown below.
+
+  ```
+  data/
+    ├── val_set_prep.h5
+    ├── val_set_ndvi_v7.h5
+    ├── val_set_3d.h5
+    ├── train_set_prep.h5
+    ├── train_set_ndvi_v7.h5
+    ├── train_set_3d.h5
+    ├── test_set_prep.h5
+    ├── test_set_ndvi_v7.h5
+    └── test_set_3d.h5
+  ```
+
+  - The `*_prep.h5` are the original data from Antonio and should be run with `notebook.ipynb` to get his results.
+
+- The `*3d.h5` are to be run with `notebook3d.ipynb`, which has the 3D convolution implemented.
+
+- The `*_ndvi_v7.h5` are the final dataset, which has the NDVI data implemented, and should be run wiht `notebookNDVI.ipynb`
+</div>
 
 ## 3. Training the model
 
-Run the `NotebookNDVI.ipynb`, the models will be saved in `model/models_trained/*.pth` and the metrics saved in `model/losses_metrics/*.csv`
+Run the `NotebookNDVI.ipynb`, the models will be saved in `model/models_trained/*.pth` and the metrics saved in `model/losses_metrics/*.csv`. Alternatively, run `notebook.ipynb` or `notebook3d.ipynb` to train the models using the other datasets, as explained above.
 
 <div style="border-left: 4px solid #3498db; padding: 10px; background-color: #f0f8ff;">
   <strong>📝 Note:</strong> The hyperparameters used in <code>NotebookNDVI.ipynb</code> to train our final version of the model 
