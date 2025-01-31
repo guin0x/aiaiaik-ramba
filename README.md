@@ -46,7 +46,7 @@ Download the entire `data/` folder [here](https://drive.google.com/drive/folders
 Follow the instructions in the [NDVI README.md](https://github.com/guin0x/aiaiaik-ramba/blob/main/NDVI_processing/README.md)
 
 <div style="border-left: 4px solid #3498db; padding: 10px; background-color: #f0f8ff;">
-  <strong>📝 Note:</strong> For the generation of NDVI dataset you will have to download all of the landsat data, therefore it is highly recommended to just download it from the previous step and skip to step <strong> 3. Training the model</strong>.
+  <strong>📝 Note:</strong> For the generation of NDVI dataset you will have to download all of the landsat data, therefore it is highly recommended to just download the processed data from the previous step and skip to step <strong> 3. Training the model</strong>.
 </div>
 
 ### 2.2 Generating final dataset
