@@ -61,27 +61,29 @@ data/test_set.h5
 ```
 
 <div style="border: 1px solid red; padding: 10px; background-color: #fff3cd;">
-  <strong>⚠️ Attention:</strong> Please note that this dataset generation code only works on <strong>Windows</strong>. It does not work in the <strong>RunPod</strong> machines. Hoever, you can download the data [here](https://drive.google.com/drive/folders/1tv6e5WHoz9MmreHLGOsXqiS-3xOpODY_?usp=share_link). After downloading, include them in a folder as shown below.
+  <strong>⚠️ Attention:</strong> Please note that this dataset generation code only works on <strong>Windows</strong>. It does not work in the <strong>RunPod</strong> machines.</div><br>
 
-  ```
-  data/
-    ├── val_set_prep.h5
-    ├── val_set_ndvi_v7.h5
-    ├── val_set_3d.h5
-    ├── train_set_prep.h5
-    ├── train_set_ndvi_v7.h5
-    ├── train_set_3d.h5
-    ├── test_set_prep.h5
-    ├── test_set_ndvi_v7.h5
-    └── test_set_3d.h5
-  ```
+If you downloaded the data in step 1, you should have three different versions as shown below.
 
-  - The `*_prep.h5` are the original data from Antonio and should be run with `notebook.ipynb` to get his results.
+```
+data/
+  ├── val_set_prep.h5
+  ├── val_set_ndvi_v7.h5
+  ├── val_set_3d.h5
+  ├── train_set_prep.h5
+  ├── train_set_ndvi_v7.h5
+  ├── train_set_3d.h5
+  ├── test_set_prep.h5
+  ├── test_set_ndvi_v7.h5
+  └── test_set_3d.h5
+```
+
+- The `*_prep.h5` are the original data from Antonio and should be run with `notebook.ipynb` to get his results.
 
 - The `*3d.h5` are to be run with `notebook3d.ipynb`, which has the 3D convolution implemented.
 
 - The `*_ndvi_v7.h5` are the final dataset, which has the NDVI data implemented, and should be run wiht `notebookNDVI.ipynb`
-</div>
+
 
 ## 3. Training the model
 
