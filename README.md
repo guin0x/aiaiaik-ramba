@@ -35,7 +35,7 @@ conda install -n aiaiai_env ipykernel --update-deps --force-reinstall
 
 ### (Optinal and highly recommended) Download all data
 
-<div style="border-left: 4px solid #3498db; padding: 10px; background-color: #f0f8ff;"><strong>📝 Note:</strong>If you follow this step, you can skip step **2. Generating the datasets**.</div> <br>
+<div style="border-left: 4px solid #3498db; padding: 10px; background-color: #f0f8ff;"><strong>📝 Note:</strong> If you follow this step, you can skip step <strong>2. Generating the datasets</strong>.</div> <br>
 
 Download the entire `data/` folder [here](www.google.com).
 
